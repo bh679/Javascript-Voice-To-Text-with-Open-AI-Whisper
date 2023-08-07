@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html data-wf-domain="">
+    <head>
+        <script src="recorder.js"></script>
+        <script src="transcriber.js"></script>
+    </head>
+    <body class="body">
+        <!-- Input field for the OpenAI API key -->
+        <label for="apiKey">OpenAI API Key:</label>
+        <input type="password" id="apiKey">
+
+        <!-- Button to start and stop recording -->
+        <button id="recordButton">Start Recording</button>
+
+        <!-- Divs to display the status message and the transcription -->
+        <div id="statusMessage"></div>
+        <div id="transcription"></div>
+
+        <script>
+            window.onload = function() {
+                // Get the elements from the page
+                const apiKeyInput = document.getElementById('apiKey');
+                const recordButton = document.getElementById('recordButton');
+                const statusMessage = document.getElementById('statusMessage');
+                const transcriptionDiv = document.getElementById('transcription');
+
+                // Create a new Recorder object
+                const recorder = new Recorder(apiKeyInput, statusMessage);
+
+                // Create a new Transcriber object
+                const transcriber = new Transcriber(apiKeyInput, statusMessage);
+
+                // When the record button is clicked
+                recordButton.onclick = function() {
+                    RecordToText();
+                };
+
+                async function RecordToText() {
+
+                    recordButton.innerText = 'Stop Recording';
+
+                    //start/stop reocrding
+                    recorder.toggleRecording(FinishRecording);
+                    
+                }
+
+                async function FinishRecording(recordingChunks)
+                {
+                    //update button
+                    recordButton.innerText = 'Start Recording';
+
+                    //transcribe results
+                    var transcript = await transcriber.transcribeAudio(recordingChunks);
+
+                    //save transcription
+                    transcriptionDiv.innerText = transcript;
+                }
+
+            };
+        </script>
+    </body>
+</html>
